@@ -50,4 +50,52 @@ describe("Search Book", () => {
             expect(emailService.sendMissingBookEmail).toHaveBeenCalled();
         });
     })
-})
+});
+
+describe('Test Search Most Popular Book', () => {
+    describe('When two books are given', () => {
+        beforeEach(() => {
+            booksProvider.getBooks = jest.fn(() => [
+                {
+                    _id: 1,
+                    ordered: 100
+                }, {
+                    _id: 2,
+                    ordered: 99
+                }
+            ])
+        })
+        it('Should return book with highest order count', () => {
+            const book = bookService.getMostPopularBook();
+            expect(book._id).toBe(1);
+        });
+    })
+});
+
+describe.only('Test Calculate Discount Logic', () => {
+    describe('When book is given with id', () => {
+        beforeEach(() => {
+            booksProvider.getBooks = jest.fn(() => [
+                {
+                    _id: 1,
+                    price: 100
+                }
+            ]);
+        });
+        it('Should return price with 20% discount', () => {
+            const price = bookService.calculateDiscount(1);
+            expect(price).toBe(80);
+        });
+    });
+
+    describe('When book is given with id not found', () => {
+        beforeEach(() => {
+            booksProvider.getBooks = jest.fn(() => []);
+        });
+        it('Should throw an error', () => {
+            expect(() =>bookService.calculateDiscount(1)).toThrow('Book with such id not found');
+        });
+    });
+
+    describe('')
+});
