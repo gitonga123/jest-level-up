@@ -18,13 +18,13 @@ describe("Search Book", () => {
             const books = bookService.searchBooks("Test");
             expect(books.length).toBe(1);
         });
-        test("Should return the book title with year", () => {
+        test("Should return the book title with publish year", () => {
             const books = bookService.searchBooks("Test");
             expect(books[0].title).toBe('Test Book 2013');
         });
 
         test("Should call not send email on finding test result", () => {
-            bookService.searchBooks('Tes');
+            bookService.searchBooks('Test');
             expect(emailService.sendMissingBookEmail).not.toHaveBeenCalled();
         });
     });
