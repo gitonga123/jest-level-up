@@ -72,7 +72,7 @@ describe('Test Search Most Popular Book', () => {
     })
 });
 
-describe.only('Test Calculate Discount Logic', () => {
+describe('Test Calculate Discount Logic', () => {
     describe('When book is given with id', () => {
         beforeEach(() => {
             booksProvider.getBooks = jest.fn(() => [
