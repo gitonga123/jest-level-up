@@ -97,5 +97,24 @@ describe.only('Test Calculate Discount Logic', () => {
         });
     });
 
-    describe('')
+    describe('Calculate discount async operation', () => {
+        beforeEach(() => {
+            booksProvider.getBooks = jest.fn(() => [
+                {
+                    _id: 1,
+                    price: 100
+                }
+            ]);
+        });
+        it('Should return price with 20% discount', async () => {
+            const price = await bookService.calculateDiscountAsync(1);
+            expect(price).toBe(80);
+        });
+
+        it ('show throw an error', () => {
+            expect(async () => await bookService.calculateDiscount(1))
+            .rejects.toThrow('Book with such id not found');
+        });
+    })
+
 });
