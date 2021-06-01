@@ -106,12 +106,13 @@ describe('Test Calculate Discount Logic', () => {
                 }
             ]);
         });
-        it('Should return price with 20% discount', async () => {
+        test('Should return price with 20% discount', async () => {
             const price = await bookService.calculateDiscountAsync(1);
             expect(price).toBe(80);
         });
+        
 
-        it ('show throw an error', () => {
+        test ('show throw an error', () => {
             expect(async () => await bookService.calculateDiscount(1))
             .rejects.toThrow('Book with such id not found');
         });
