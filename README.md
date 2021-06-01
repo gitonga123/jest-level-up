@@ -1,4 +1,4 @@
-# jest-level-up
+# jest-level-up [![Node.js CI](https://github.com/gitonga123/jest-level-up/actions/workflows/node.js.yml/badge.svg)](https://github.com/gitonga123/jest-level-up/actions/workflows/node.js.yml)
 
 Unit Testing in JavaScript
 
