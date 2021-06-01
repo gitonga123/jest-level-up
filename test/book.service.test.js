@@ -113,7 +113,7 @@ describe('Test Calculate Discount Logic', () => {
         
 
         test ('show throw an error', () => {
-            expect(async () => await bookService.calculateDiscount(1))
+            expect(async () => await bookService.calculateDiscount(2))
             .rejects.toThrow('Book with such id not found');
         });
     })
