@@ -21,5 +21,10 @@
   "homepage": "https://github.com/gitonga123/jest-mocha-level-up#readme",
   "devDependencies": {
     "jest": "^26.6.3"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33"
   }
 }
