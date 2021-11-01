@@ -1,29 +1,28 @@
+// https://api.sofascore.com/api/v1/sport/football/scheduled-events/2019-02-26/inverse
+// https://api.sofascore.com/api/v1/sport/football/scheduled-events/2019-02-26
+// https://api.sofascore.com/api/v1/sport/football/odds/1/2019-02-26
+
 const fs = require("fs");
-const odds = require("./odds-2019-01-02.json");
-const odds_2 = odds["odds"];
+const fetch= require('node-fetch')
+
 const moment = require("moment-timezone");
 const _ = require("lodash");
 const { Pool } = require("pg");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 const timezone = "Africa/Nairobi";
 moment.locale("en");
 const date_format = "YYYY-MM-DD HH:mm:ss";
 
-const pool = new Pool({
-  user: process.env.DB_USERNAME,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.PORT,
-});
+const { Client } = require("pg");
 
-pool.on("error", (err, client) => {
-  console.error("Error:", err);
-});
+const client = new Client();
+client.connect();
 
-fs.readFile("./2019-01-02.json", "utf8", (err, data) => {
+const odds = require("./odds-2019-01-02.json");
+const odds_2 = odds["odds"];
+fs.readFile("./inverse.json", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
@@ -37,14 +36,14 @@ fs.readFile("./2019-01-02.json", "utf8", (err, data) => {
       object.competition = item.tournament.category.name.concat(
         " - ",
         item.tournament.name
-      );
+      ).replace("'"," ");
       object.event_date = moment
         .unix(item.startTimestamp)
         .tz(timezone)
         .format(date_format);
-      
-      object.home_team = getValueWithKey(item.homeTeam, "name");
-      object.away_team = getValueWithKey(item.awayTeam, "name");
+
+      object.home_team = getValueWithKey(item.homeTeam, "name").replace("'"," ");
+      object.away_team = getValueWithKey(item.awayTeam, "name").replace("'"," ");
       object.halftime_score =
         getValueWithKey(item.homeScore, "period1") +
         "-" +
@@ -73,43 +72,58 @@ fs.readFile("./2019-01-02.json", "utf8", (err, data) => {
         getValueWithKey(item, "winnerCode") == 3
           ? "X"
           : getValueWithKey(item, "winnerCode");
-        object.created_at = moment().format(date_format);
-        object.updated_at = moment().format(date_format);
+      object.created_at = moment().format(date_format);
+      object.updated_at = moment().format(date_format);
       if (odds_2[object.match_id] !== undefined) {
-        object.home_change = odds_2[object.match_id].choices[0].change;
-        object.draw_change = odds_2[object.match_id].choices[1].change;
-        object.away_change = odds_2[object.match_id].choices[2].change;
+        object.home_change = getValueWithKey(odds_2[object.match_id].choices[0], 'change');
+        object.draw_change = getValueWithKey(odds_2[object.match_id].choices[1], 'change');
+        object.away_change = getValueWithKey(odds_2[object.match_id].choices[2], 'change');
         object.home_odd = convertFractionToDecimal(
-          odds_2[object.match_id].choices[0].fractionalValue
+          getValueWithKey(odds_2[object.match_id].choices[0], 'fractionalValue')
         );
         object.draw_odd = convertFractionToDecimal(
-          odds_2[object.match_id].choices[1].fractionalValue
+          getValueWithKey(odds_2[object.match_id].choices[1], 'fractionalValue')
         );
         object.away_odd = convertFractionToDecimal(
-          odds_2[object.match_id].choices[2].fractionalValue
+          getValueWithKey(odds_2[object.match_id].choices[2], 'fractionalValue')
         );
 
-        let insert_query_string = convertObjectToInsertQuery(object);
-        pool.query(insert_query_string).then( res => {
-            console.log("Match Id inserted successfully -->", object.match_id);
-        }).catch(err => {
-            console.log("Match id failed to insert --->", object.match_id);
-        });
-        // pool.query(insert_query_string, (err,res) => {
-        //     if (err) {
-        //         console.log("Error encountered while trying to insert values");
-        //         console.log(err);
-        //     }
-        // });
+        let query_string =
+          "select match_id FROM footballs where match_id ilike '" +
+          object.match_id +
+          "'";
+
+        client
+          .query(query_string)
+          .then((res) => {
+            console.log("Get number of rows --->", res.rowCount);
+            if (res.rowCount < 1) {
+              let insert_query_string = convertObjectToInsertQuery(object);
+              client
+                .query(insert_query_string)
+                .then((res) => {
+                  console.log(
+                    "Match Id inserted successfully -->",
+                    object.match_id
+                  );
+                })
+                .catch((err) => {
+                    console.log(insert_query_string);
+                  console.log(
+                    "Match id failed to insert --->",
+                    object.match_id
+                  );
+                  console.log(err);
+                });
+            }
+          })
+          .catch((error) => {});
       }
-      // pool.end();
-      
-      
-      //console.log(insert_query_string);
-      //console.log(object);
     });
 
-    pool.end();
+    //client.end();
+
+    //client.close();
   } catch (err) {
     console.log(err);
   }
@@ -153,11 +167,11 @@ var convertObjectToInsertQuery = function (object) {
       ") VALUES ("
     );
     object_keys.map((item_o, index) => {
-        if (object_keys.length - 1== index) {
-            insert_string = insert_string + "'" + object[item_o].toString() + "')";
-        } else {
-            insert_string = insert_string + "'" + object[item_o].toString() + "',"
-        }
+      if (object_keys.length - 1 == index) {
+        insert_string = insert_string + "'" + object[item_o].toString().trim() + "')";
+      } else {
+        insert_string = insert_string + "'" + object[item_o].toString().trim() + "',";
+      }
     });
     return insert_string;
   } catch (error) {
