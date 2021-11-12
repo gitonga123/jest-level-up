@@ -1,6 +1,6 @@
-// https://api.sofascore.com/api/v1/sport/football/scheduled-events/2019-02-26/inverse
-// https://api.sofascore.com/api/v1/sport/football/scheduled-events/2019-02-26
-// https://api.sofascore.com/api/v1/sport/football/odds/1/2019-02-26
+// https://api.sofascore.com/api/v1/sport/football/scheduled-events/2021-11-03/inverse
+// https://api.sofascore.com/api/v1/sport/football/scheduled-events/2021-11-03
+// https://api.sofascore.com/api/v1/sport/football/odds/1/2021-11-03
 
 const fs = require("fs");
 const fetch= require('node-fetch')
@@ -22,7 +22,7 @@ client.connect();
 
 const odds = require("./odds-2019-01-02.json");
 const odds_2 = odds["odds"];
-fs.readFile("./inverse.json", "utf8", (err, data) => {
+fs.readFile("./2019-01-02.json", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
@@ -74,7 +74,7 @@ fs.readFile("./inverse.json", "utf8", (err, data) => {
           : getValueWithKey(item, "winnerCode");
       object.created_at = moment().format(date_format);
       object.updated_at = moment().format(date_format);
-      if (odds_2[object.match_id] !== undefined) {
+      if (odds_2[object.match_id] !== undefined && object.result != 0) {
         object.home_change = getValueWithKey(odds_2[object.match_id].choices[0], 'change');
         object.draw_change = getValueWithKey(odds_2[object.match_id].choices[1], 'change');
         object.away_change = getValueWithKey(odds_2[object.match_id].choices[2], 'change');
@@ -104,7 +104,7 @@ fs.readFile("./inverse.json", "utf8", (err, data) => {
                 .then((res) => {
                   console.log(
                     "Match Id inserted successfully -->",
-                    object.match_id
+                    object.match_id, 'total result -->', object.result, 'correct_score -->', object.correct_score
                   );
                 })
                 .catch((err) => {
@@ -118,7 +118,7 @@ fs.readFile("./inverse.json", "utf8", (err, data) => {
             }
           })
           .catch((error) => {});
-      }
+      } 
     });
 
     //client.end();
