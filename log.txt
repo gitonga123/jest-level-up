@@ -1,0 +1,76 @@
+11-22 12:08:35 INFO metabase.util :: Loading Metabase...
+11-22 12:08:38 INFO util.encryption :: DB details encryption is DISABLED for this Metabase instance. 🔓 
+See http://www.metabase.com/docs/latest/operations-guide/start.html#encrypting-your-database-connection-details-at-rest for more information.
+11-22 12:08:43 INFO metabase.core :: Starting Metabase in STANDALONE mode
+11-22 12:08:43 INFO metabase.core :: Launching Embedded Jetty Webserver with config:
+ {:port 3000}
+
+11-22 12:08:43 INFO metabase.core :: Starting Metabase version v0.28.0-snapshot (133784f partoa-master) ...
+11-22 12:08:43 INFO metabase.core :: System timezone is 'Africa/Nairobi' ...
+11-22 12:08:44 INFO metabase.core :: Setting up and migrating Metabase DB. Please sit tight, this may take a minute...
+11-22 12:08:44 INFO metabase.db :: Verifying mysql Database Connection ...
+11-22 12:08:45 INFO metabase.db :: Verify Database Connection ...  ✅
+11-22 12:08:45 INFO metabase.db :: Running Database Migrations...
+Mon Nov 22 12:08:45 EAT 2021 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+
+The last packet successfully received from the server was 27 milliseconds ago.  The last packet sent successfully to the server was 21 milliseconds ago.
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:404)
+	at com.mysql.jdbc.SQLError.createCommunicationsException(SQLError.java:988)
+	at com.mysql.jdbc.ExportControlled.transformSocketToSSLSocket(ExportControlled.java:164)
+	at com.mysql.jdbc.MysqlIO.negotiateSSLConnection(MysqlIO.java:4894)
+	at com.mysql.jdbc.MysqlIO.proceedHandshakeWithPluggableAuthentication(MysqlIO.java:1661)
+	at com.mysql.jdbc.MysqlIO.doHandshake(MysqlIO.java:1228)
+	at com.mysql.jdbc.ConnectionImpl.coreConnect(ConnectionImpl.java:2253)
+	at com.mysql.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:2284)
+	at com.mysql.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:2083)
+	at com.mysql.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:806)
+	at com.mysql.jdbc.JDBC4Connection.<init>(JDBC4Connection.java:47)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at com.mysql.jdbc.Util.handleNewInstance(Util.java:404)
+	at com.mysql.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:410)
+	at com.mysql.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:328)
+	at java.sql.DriverManager.getConnection(DriverManager.java:664)
+	at java.sql.DriverManager.getConnection(DriverManager.java:208)
+	at clojure.java.jdbc$get_connection.invokeStatic(jdbc.clj:364)
+	at clojure.java.jdbc$get_connection.invoke(jdbc.clj:226)
+	at clojure.java.jdbc$db_transaction_STAR_.invokeStatic(jdbc.clj:775)
+	at clojure.java.jdbc$db_transaction_STAR_.invoke(jdbc.clj:711)
+	at clojure.java.jdbc$db_transaction_STAR_.invokeStatic(jdbc.clj:724)
+	at clojure.java.jdbc$db_transaction_STAR_.invoke(jdbc.clj:711)
+	at metabase.db$migrate_BANG_.invokeStatic(db.clj:246)
+	at metabase.db$migrate_BANG_.invoke(db.clj:227)
+	at metabase.db$run_schema_migrations_BANG_.invokeStatic(db.clj:381)
+	at metabase.db$run_schema_migrations_BANG_.invoke(db.clj:376)
+	at metabase.db$setup_db_BANG_.invokeStatic(db.clj:399)
+	at metabase.db$setup_db_BANG_.doInvoke(db.clj:392)
+	at clojure.lang.RestFn.invoke(RestFn.java:421)
+	at metabase.core$init_BANG_.invokeStatic(core.clj:141)
+	at metabase.core$init_BANG_.invoke(core.clj:120)
+	at metabase.core$start_normally.invokeStatic(core.clj:249)
+	at metabase.core$start_normally.invoke(core.clj:242)
+	at metabase.core$_main.invokeStatic(core.clj:347)
+	at metabase.core$_main.doInvoke(core.clj:342)
+	at clojure.lang.RestFn.invoke(RestFn.java:397)
+	at clojure.lang.AFn.applyToHelper(AFn.java:152)
+	at clojure.lang.RestFn.applyTo(RestFn.java:132)
+	at metabase.core.main(Unknown Source)
+Caused by: javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)
+	at sun.security.ssl.HandshakeContext.<init>(HandshakeContext.java:171)
+	at sun.security.ssl.ClientHandshakeContext.<init>(ClientHandshakeContext.java:98)
+	at sun.security.ssl.TransportContext.kickstart(TransportContext.java:220)
+	at sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:428)
+	at com.mysql.jdbc.ExportControlled.transformSocketToSSLSocket(ExportControlled.java:149)
+	... 40 more
+11-22 12:08:45 ERROR metabase.core :: Metabase Initialization FAILED:  Communications link failure
+
+The last packet successfully received from the server was 27 milliseconds ago.  The last packet sent successfully to the server was 21 milliseconds ago.
+11-22 12:08:45 INFO metabase.core :: Metabase Shutting Down ...
+11-22 12:08:45 INFO metabase.core :: Metabase Shutdown COMPLETE
