@@ -7,21 +7,16 @@ function addTwoNumbers( _arr, k) {
 		return false;
 	}
 
-	let n_set = new Set();
+	let n_set = {};
 	let found = false;
 
-	_arr.map(item => {
-		let diff = k - item
-		if (n_set.has(diff)) {
+	_arr.map((item) => {
+		let diff =  k - item;
+		n_set[diff] = item; 
+		if (n_set[item] == diff) {
 			found = true;
-		}
-
-		n_set.add(diff);
+		}  
 	});
-	console.log(n_set);
 	return found;
 }
-
-console.log(addTwoNumbers([11,15,3,7], 17));
-
-// module.exports = {addTwoNumbers}
+module.exports = {addTwoNumbers}
