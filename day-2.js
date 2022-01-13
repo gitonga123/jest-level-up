@@ -30,4 +30,28 @@ function productExceptI (_arr) {
 	return prod;
 }
 
-module.exports={productExceptI};
+// solution 2
+
+function productArray (_arr) {
+	let n = _arr.length;
+	if (n <= 1) {
+		return false;
+	}
+
+	let temp = 1;
+	let prod = new Array(n).fill(1);
+	for (let i = 0; i < n; i++) {
+		prod[i] = temp;
+		temp *= _arr[i];
+	}
+	
+	temp = 1;
+	for (let i = n - 1; i >= 0; i--) {
+		prod[i] *= temp;
+		temp *= _arr[i]; 
+	}
+
+	return prod;
+}
+
+module.exports={productExceptI: productArray};
