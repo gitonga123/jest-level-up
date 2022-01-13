@@ -17,5 +17,17 @@ describe("Find Two Numbers", () => {
 		expect(addTwoNumbers.addTwoNumbers([-3,1,-4,0], -3)).toBeTruthy();
 	});
 
+	test("Should return false if two numbers are not found for negative numbers", () => {
+		expect(addTwoNumbers.addTwoNumbers([-3,1,-4,0], 7)).toBeFalsy();
+	});
+
+	test("Should return true if two numbers are not found for negative numbers and positive numbers", () => {
+		expect(addTwoNumbers.addTwoNumbers([-3,1,-4,0], -2)).toBeTruthy();
+	});
+	
+	test("Should return false if two numbers are not found for negative numbers and positive numbers", () => {
+		expect(addTwoNumbers.addTwoNumbers([-3,1,-4,4], -1)).toBeFalsy();
+	});
+
 
 });
