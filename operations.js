@@ -28,8 +28,8 @@ const getRecordDate = async (processed = 1) => {
     return {
       event_date: false,
       id: false,
-      number_of_records: false
-    }
+      number_of_records: false,
+    };
   }
   return {
     event_date: q_response.rows[0].event_date,
@@ -38,7 +38,12 @@ const getRecordDate = async (processed = 1) => {
   };
 };
 
-
+const updateRecordsWithoutScores = async (columns, values) => {
+  let up_s = `UPDATE public.sofascores SET ${columns[0]} = '${values[0]}', ${columns[1]} = '${values[1]}', ${columns[2]} = '${values[2]}', ${columns[3]} = '${values[3]}', ${columns[4]} = '${values[4]}', ${columns[5]} = '${values[5]}', ${columns[6]} = '${values[6]}', ${columns[7]} = '${values[7]}' WHERE  id = ${values[8]};`;
+  const update_string = await client.query(up_s);
+  console.log(up_s);
+  return update_string;
+};
 
 const updateNumberRecords = async (id, number_of_records, processed) => {
   const q_response_1 = await client.query(
@@ -61,7 +66,7 @@ const updateRecord = async (query) => {
   const update_record = await client.query(query);
   console.log("Updating records for second half --->");
   return update_record;
-}
+};
 
 const checkRecordExists = async (match_id) => {
   const q_response = await client.query(
@@ -72,12 +77,20 @@ const checkRecordExists = async (match_id) => {
   };
 };
 
+const getRecordsWithoutScores = async () => {
+  const q_response = await client.query(
+    `SELECT id, match_id from public.sofascores where updated_score = 0;`
+  );
+
+  return q_response;
+};
+
 const getEventsRecordsPerDate = async (event_date) => {
   let event_records = `/var/www/html/twitter-api/storage/app/${event_date}_base.json`;
   const event_record_list = await readFile(event_records);
 
-  return {event: event_record_list.toString()};
-}
+  return { event: event_record_list.toString() };
+};
 
 const getRecordsPerDate = async (event_date) => {
   //   console.log(`./var/www/html/twitter-api/storage/app/${event_date}_base.json`);
@@ -98,5 +111,7 @@ module.exports = {
   insertNewRecord,
   updateNumberRecords,
   getEventsRecordsPerDate,
-  updateRecord
+  updateRecord,
+  getRecordsWithoutScores,
+  updateRecordsWithoutScores
 };

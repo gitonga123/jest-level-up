@@ -7,6 +7,10 @@ const timezone = "Africa/Nairobi";
 moment.locale("en");
 const date_format = "YYYY-MM-DD HH:mm:ss";
 const _ = require("lodash");
+const fs = require('fs');
+const util = require('util');
+const { result } = require("lodash");
+const readFile = util.promisify(fs.readFile);
 
 app.get("/", async (req, res) => {
   const _dates = await db.getRecordDate();
@@ -244,6 +248,83 @@ var convertObjectToInsertQuery = function (object) {
     console.log(error);
   }
 };
+
+
+
+app.get("/api/update/tt/results", async (req, res) => {
+  let results_link = `/home/daniel/jest-level-up/upload/25_jan_2022.json`;
+  const results_record = JSON.parse(await readFile(results_link));
+  const data = results_record['data']['tournaments'][0]['events'];
+  
+  const data_r = {};
+  data.map(item => {
+    let scores = getScores(item['regularTimeScore']);
+    let results = getWinner(item['setScore']);
+    data_r[item['eventId']] =  {
+      'event_date': item['estimateStartTime'],
+      'correct_score': item['setScore'],
+      'result': results[0],
+      'home_total': scores[0],
+      'away_total': scores[1],
+      'both_total': scores[0]+scores[1],
+      'home_score': results[1],
+      'away_score': results[2]
+    };
+  });
+
+
+  const matches = await db.getRecordsWithoutScores();
+  if (matches.rowCount > 0) {
+    const update_r = matches.rows.map(async (item) => {
+      let insert_v = data_r[item['match_id']];
+      if (!_.isUndefined(insert_v)) {
+        await db.updateRecordsWithoutScores(
+          [
+            'correct_score',
+            'result',
+            'home_total',
+            'away_total',
+            'both_total',
+            'home_score',
+            'away_score',
+            'updated_score'
+          ],
+          [
+            insert_v.correct_score,
+            insert_v.result,
+            insert_v.home_total,
+            insert_v.away_total,
+            insert_v.both_total,
+            insert_v.home_score,
+            insert_v.away_score,
+            "1",
+            item['id']
+          ]
+        )
+      }
+      return result;
+    });
+    await Promise.all(update_r);
+  }
+  res.status(200).send({'data': data_r});
+});
+
+const getScores = function(item) {
+  if (_.isUndefined(item) || item.length == 0) return ["", "", ""];
+  let r = {'h': 0, 'a': 0};
+  item.map(i => {
+    rl = i.split(":");
+    r['h'] = r['h'] + parseInt(rl[0]);
+    r['a'] = r['a'] + parseInt(rl[1]);
+  });
+  return [r['h'], r['a']];
+}
+
+const getWinner = function(item) {
+  let str_s = item.split(":");
+  let result = getHalftimeWinner(str_s[0], str_s[1]);
+  return [result, str_s[0], str_s[1]];
+}
 
 app.listen(port, () =>
   console.log(`Hello World app listening on port ${port}`)
