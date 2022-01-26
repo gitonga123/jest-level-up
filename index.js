@@ -274,10 +274,12 @@ app.get("/api/update/tt/results", async (req, res) => {
 
 
   const matches = await db.getRecordsWithoutScores();
+  let count_updates = 0;
   if (matches.rowCount > 0) {
     const update_r = matches.rows.map(async (item) => {
       let insert_v = data_r[item['match_id']];
       if (!_.isUndefined(insert_v)) {
+        
         await db.updateRecordsWithoutScores(
           [
             'correct_score',
@@ -300,13 +302,13 @@ app.get("/api/update/tt/results", async (req, res) => {
             "1",
             item['id']
           ]
-        )
+        );
+        count_updates = count_updates + 1;
       }
-      return result;
     });
     await Promise.all(update_r);
   }
-  res.status(200).send({'data': data_r});
+  res.status(200).send({'success': true, 'number_of_records': count_updates});
 });
 
 const getScores = function(item) {
