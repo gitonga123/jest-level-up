@@ -312,7 +312,7 @@ app.get("/api/update/tt/results", async (req, res) => {
 });
 
 const getScores = function(item) {
-  if (_.isUndefined(item) || item.length == 0) return ["", "", ""];
+  if (_.isUndefined(item) || item.length == 0) return ["c", "c", "c"];
   let r = {'h': 0, 'a': 0};
   item.map(i => {
     rl = i.split(":");
@@ -323,6 +323,7 @@ const getScores = function(item) {
 }
 
 const getWinner = function(item) {
+  if (_.isUndefined(item) || item.length == 0) return ['c', 'c','c']
   let str_s = item.split(":");
   let result = getHalftimeWinner(str_s[0], str_s[1]);
   return [result, str_s[0], str_s[1]];
