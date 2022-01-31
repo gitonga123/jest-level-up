@@ -301,7 +301,7 @@ app.get("/api/update/tt/results", async (req, res) => {
     await Promise.all(update_r);
   }
 
-  let msg = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  let msg = `<div class="alert alert-info alert-dismissible fade show" role="alert">
   <strong>Niiiice!</strong> Number of records ${count_updates}.
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>`;
