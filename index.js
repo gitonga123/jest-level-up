@@ -7,19 +7,19 @@ const timezone = "Africa/Nairobi";
 moment.locale("en");
 const date_format = "YYYY-MM-DD HH:mm:ss";
 const _ = require("lodash");
-const fs = require('fs');
-const util = require('util');
+const fs = require("fs");
+const util = require("util");
 const { result } = require("lodash");
 const readFile = util.promisify(fs.readFile);
 
 app.get("/", async (req, res) => {
   const _dates = await db.getRecordDate();
   try {
-    if (_dates.event_date == false ) {
+    if (_dates.event_date == false) {
       res.status(404).send({
         success: false,
         value: {},
-        message: "Records not found"
+        message: "Records not found",
       });
     }
     const records = await db.getRecordsPerDate(_dates.event_date);
@@ -43,7 +43,7 @@ app.get("/", async (req, res) => {
     res.status(400).send({
       success: false,
       value: {
-        error
+        error,
       },
       message: "Initial Insert error",
     });
@@ -54,25 +54,17 @@ app.get("/update/second_half/details", async (req, res) => {
   const _dates = await db.getRecordDate(4);
   try {
     const records = await db.getEventsRecordsPerDate(_dates.event_date);
-    const insert_record = await updateSecondHalfRecords(records['event']);
+    const insert_record = await updateSecondHalfRecords(records["event"]);
     console.log("Update records --->", insert_record);
-    await db.updateNumberRecords(
-      _dates.id,
-      _dates.number_of_records,
-      5
-    );
+    await db.updateNumberRecords(_dates.id, _dates.number_of_records, 5);
     res.status(200).send({
       success: true,
       value: insert_record,
       message: "Second Half Updates",
     });
-  } catch(error) {
+  } catch (error) {
     console.error(error);
-    await db.updateNumberRecords(
-      _dates.id,
-      _dates.number_of_records,
-      5
-    );
+    await db.updateNumberRecords(_dates.id, _dates.number_of_records, 5);
     res.status(500).send({
       success: false,
       value: {},
@@ -87,8 +79,12 @@ const updateSecondHalfRecords = async (event) => {
   const event_updating = events.events.map(async (item) => {
     let record_exists = await db.checkRecordExists(item.id);
     if (record_exists.event_count === 1) {
-      if (_.has(item.homeScore, "period2") && _.has(item.awayScore, "period2")) {
-        let second_half_score = item.homeScore['period2']+"-"+item.awayScore['period2'];
+      if (
+        _.has(item.homeScore, "period2") &&
+        _.has(item.awayScore, "period2")
+      ) {
+        let second_half_score =
+          item.homeScore["period2"] + "-" + item.awayScore["period2"];
         let update_query = `UPDATE public.footballs SET secondhalf_score = '${second_half_score}' where match_id ilike '${item.id}';`;
         await db.updateRecord(update_query);
         count = count + 1;
@@ -98,7 +94,7 @@ const updateSecondHalfRecords = async (event) => {
 
   await Promise.all(event_updating);
   return count;
-}
+};
 const mapEventToValue = async (event, odd) => {
   let object = {};
   const events = JSON.parse(event);
@@ -249,47 +245,43 @@ var convertObjectToInsertQuery = function (object) {
   }
 };
 
-
-
 app.get("/api/update/tt/results", async (req, res) => {
   let results_link = `/home/daniel/jest-level-up/upload/25_jan_2022.json`;
   const results_record = JSON.parse(await readFile(results_link));
-  const data = results_record['data']['tournaments'][0]['events'];
-  
+  const data = results_record["data"]["tournaments"][0]["events"];
+
   const data_r = {};
-  data.map(item => {
-    let scores = getScores(item['regularTimeScore']);
-    let results = getWinner(item['setScore']);
-    data_r[item['eventId']] =  {
-      'event_date': item['estimateStartTime'],
-      'correct_score': item['setScore'],
-      'result': results[0],
-      'home_total': scores[0],
-      'away_total': scores[1],
-      'both_total': scores[0]+scores[1],
-      'home_score': results[1],
-      'away_score': results[2]
+  data.map((item) => {
+    let scores = getScores(item["regularTimeScore"]);
+    let results = getWinner(item["setScore"]);
+    data_r[item["eventId"]] = {
+      event_date: item["estimateStartTime"],
+      correct_score: item["setScore"],
+      result: results[0],
+      home_total: scores[0],
+      away_total: scores[1],
+      both_total: scores[0] + scores[1],
+      home_score: results[1],
+      away_score: results[2],
     };
   });
-
 
   const matches = await db.getRecordsWithoutScores();
   let count_updates = 0;
   if (matches.rowCount > 0) {
     const update_r = matches.rows.map(async (item) => {
-      let insert_v = data_r[item['match_id']];
+      let insert_v = data_r[item["match_id"]];
       if (!_.isUndefined(insert_v)) {
-        
         await db.updateRecordsWithoutScores(
           [
-            'correct_score',
-            'result',
-            'home_total',
-            'away_total',
-            'both_total',
-            'home_score',
-            'away_score',
-            'updated_score'
+            "correct_score",
+            "result",
+            "home_total",
+            "away_total",
+            "both_total",
+            "home_score",
+            "away_score",
+            "updated_score",
           ],
           [
             insert_v.correct_score,
@@ -300,7 +292,7 @@ app.get("/api/update/tt/results", async (req, res) => {
             insert_v.home_score,
             insert_v.away_score,
             "1",
-            item['id']
+            item["id"],
           ]
         );
         count_updates = count_updates + 1;
@@ -308,26 +300,31 @@ app.get("/api/update/tt/results", async (req, res) => {
     });
     await Promise.all(update_r);
   }
-  res.status(200).send({'success': true, 'number_of_records': count_updates});
+
+  let msg = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>Niiiice!</strong> Number of records ${count_updates}.
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>`;
+  res.status(200).send({ success: true, number_of_records: msg });
 });
 
-const getScores = function(item) {
+const getScores = function (item) {
   if (_.isUndefined(item) || item.length == 0) return ["c", "c", "c"];
-  let r = {'h': 0, 'a': 0};
-  item.map(i => {
+  let r = { h: 0, a: 0 };
+  item.map((i) => {
     rl = i.split(":");
-    r['h'] = r['h'] + parseInt(rl[0]);
-    r['a'] = r['a'] + parseInt(rl[1]);
+    r["h"] = r["h"] + parseInt(rl[0]);
+    r["a"] = r["a"] + parseInt(rl[1]);
   });
-  return [r['h'], r['a']];
-}
+  return [r["h"], r["a"]];
+};
 
-const getWinner = function(item) {
-  if (_.isUndefined(item) || item.length == 0) return ['c', 'c','c']
+const getWinner = function (item) {
+  if (_.isUndefined(item) || item.length == 0) return ["c", "c", "c"];
   let str_s = item.split(":");
   let result = getHalftimeWinner(str_s[0], str_s[1]);
   return [result, str_s[0], str_s[1]];
-}
+};
 
 app.listen(port, () =>
   console.log(`Hello World app listening on port ${port}`)
