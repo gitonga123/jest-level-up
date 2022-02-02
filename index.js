@@ -263,6 +263,7 @@ app.get("/api/update/tt/results", async (req, res) => {
       both_total: scores[0] + scores[1],
       home_score: results[1],
       away_score: results[2],
+      scores: JSON.stringify(item["gameScore"])
     };
   });
 
@@ -282,6 +283,7 @@ app.get("/api/update/tt/results", async (req, res) => {
             "home_score",
             "away_score",
             "updated_score",
+            "scores"
           ],
           [
             insert_v.correct_score,
@@ -292,6 +294,7 @@ app.get("/api/update/tt/results", async (req, res) => {
             insert_v.home_score,
             insert_v.away_score,
             "1",
+            insert_v.scores,
             item["id"],
           ]
         );
