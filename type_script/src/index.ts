@@ -149,6 +149,7 @@ const rwanda = new PeopleP(11000000, "Rwandese", 260);
 console.log(kenya.print());
 console.log(rwanda.print());
 
+// subclass
 class National extends PeopleP implements PeopleInterface {
 	private id: number;
 
@@ -168,3 +169,17 @@ const rwandeseUser = new National(11000000, "Rwandese", 260, 123);
 
 console.log(kenyanUser.print());
 console.log(rwandeseUser.print());
+
+// Generics
+//  adding generics to ensure type of elements are strict
+// same technic can be used on objects, and classes
+function getArray<T>(items: T[]): T[] {
+	return new Array().concat(items);
+}
+
+let numArray = getArray<number>([1,2,3,4,5]);
+let strArray = getArray<string>(['Daniel', 'Ann', 'Stephanie']);
+
+numArray.push(150);
+strArray.push('Mutwiri');
+
