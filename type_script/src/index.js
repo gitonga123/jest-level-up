@@ -38,4 +38,17 @@ var customerTrue = true;
 function addNum(x, y) {
     return x + y;
 }
+// 
+function addNumVoid(x, y) {
+    console.log(x + y);
+}
 console.log(addNum(5, 4));
+var user1 = {
+    id: 1,
+    name: 'Daniel',
+    dob: 1992
+};
+user1.id = 5;
+user1.name = 'Mutwiri';
+var add = function (x, y) { return x + y; };
+console.log(add(19, 18));
