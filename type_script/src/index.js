@@ -54,3 +54,19 @@ var add = function (x, y) { return x + y; };
 var sub = function (x, y) { return x - y; };
 console.log(add(19, 18));
 console.log(sub(15, 15));
+// classes
+var People = /** @class */ (function () {
+    function People(population, nationality, countryCode) {
+        this.population = population;
+        this.nationality = nationality;
+        this.countryCode = countryCode;
+    }
+    People.prototype.print = function () {
+        return "Code: ".concat(this.countryCode, " ").concat(this.nationality, " with ").concat(this.population, " million people");
+    };
+    return People;
+}());
+var kenyan = new People(50000000, 'Kenyan', 254);
+var rwandan = new People(11000000, 'Rwandese', 260);
+console.log(kenyan.print());
+console.log(rwandan.print());

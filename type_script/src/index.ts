@@ -96,3 +96,27 @@ const sub: MathFunc = (x: number, y:number): number => x - y;
 console.log(add(19, 18));
 console.log(sub(15, 15));
 
+// classes
+class People {
+	population: number;
+	nationality: string;
+	protected countryCode: number;
+
+	constructor(population: number, nationality: string, countryCode: number) {
+		this.population = population;
+		this.nationality = nationality;
+		this.countryCode = countryCode;
+	}
+
+	print() {
+		return `Code: ${this.countryCode} ${this.nationality} with ${this.population} million people`
+	}
+}
+
+const kenyan = new People(50000000, 'Kenyan', 254);
+const rwandan = new People(11000000, 'Rwandese', 260);
+
+console.log(kenyan.print());
+console.log(rwandan.print());
+
+
