@@ -51,4 +51,6 @@ var user1 = {
 user1.id = 5;
 user1.name = 'Mutwiri';
 var add = function (x, y) { return x + y; };
+var sub = function (x, y) { return x - y; };
 console.log(add(19, 18));
+console.log(sub(15, 15));
