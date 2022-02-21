@@ -49,19 +49,19 @@ console.log(Direction1.Up, Direction1.Down);
 console.log(person);
 
 // Type Assertion - telling a compiler we are treating an entity as a different type
-let cid: any = 1
+let cid: any = 1;
 let customerId = <number>cid;
 let customerTrue = <boolean>true;
 
 // functions
 
-function addNum(x: number, y: number):number {
-	return x+y;
+function addNum(x: number, y: number): number {
+  return x + y;
 }
 
-// 
-function addNumVoid(x: number, y: number):void {
-	console.log(x+y);
+//
+function addNumVoid(x: number, y: number): void {
+  console.log(x + y);
 }
 
 console.log(addNum(5, 4));
@@ -69,54 +69,102 @@ console.log(addNum(5, 4));
 // Interfaces
 
 interface UserInterface {
-	id: number
-	name: string
-	age?: number
-	readonly dob: number
-
+  id: number;
+  name: string;
+  age?: number;
+  readonly dob: number;
 }
 
 const user1: UserInterface = {
-	id: 1,
-	name: 'Daniel',
-	dob: 1992
-}
+  id: 1,
+  name: "Daniel",
+  dob: 1992,
+};
 
 user1.id = 5;
-user1.name = 'Mutwiri';
+user1.name = "Mutwiri";
 
 interface MathFunc {
-	(x: number, y: number): number
+  (x: number, y: number): number;
 }
 
-const add: MathFunc = (x: number, y:number): number => x+y;
+const add: MathFunc = (x: number, y: number): number => x + y;
 
-const sub: MathFunc = (x: number, y:number): number => x - y;
+const sub: MathFunc = (x: number, y: number): number => x - y;
 
 console.log(add(19, 18));
 console.log(sub(15, 15));
 
 // classes
 class People {
-	population: number;
-	nationality: string;
-	protected countryCode: number;
+  population: number;
+  nationality: string;
+  protected countryCode: number;
 
-	constructor(population: number, nationality: string, countryCode: number) {
-		this.population = population;
-		this.nationality = nationality;
-		this.countryCode = countryCode;
-	}
+  constructor(population: number, nationality: string, countryCode: number) {
+    this.population = population;
+    this.nationality = nationality;
+    this.countryCode = countryCode;
+  }
 
-	print() {
-		return `Code: ${this.countryCode} ${this.nationality} with ${this.population} million people`
-	}
+  print() {
+    return `Code: ${this.countryCode} ${this.nationality} with ${this.population} million people`;
+  }
 }
 
-const kenyan = new People(50000000, 'Kenyan', 254);
-const rwandan = new People(11000000, 'Rwandese', 260);
+const kenyan = new People(50000000, "Kenyan", 254);
+const rwandan = new People(11000000, "Rwandese", 260);
 
 console.log(kenyan.print());
 console.log(rwandan.print());
 
+interface PeopleInterface {
+  population: number;
+  nationality: string;
+  countryCode: number;
+  print(): string;
+}
 
+// classes
+
+class PeopleP implements PeopleInterface {
+  population: number;
+  nationality: string;
+  countryCode: number;
+
+  constructor(population: number, nationality: string, countryCode: number) {
+    this.population = population;
+    this.nationality = nationality;
+    this.countryCode = countryCode;
+  }
+
+  print() {
+    return `Code: ${this.countryCode} ${this.nationality} with ${this.population} million people`;
+  }
+}
+
+const kenya = new PeopleP(50000000, "Kenyan", 254);
+const rwanda = new PeopleP(11000000, "Rwandese", 260);
+
+console.log(kenya.print());
+console.log(rwanda.print());
+
+class National extends PeopleP implements PeopleInterface {
+	private id: number;
+
+
+  constructor(population: number, nationality: string, countryCode: number, id: number) {
+	super(population, nationality, countryCode);
+	this.id = id;
+  }
+
+  print() {
+    return `id: ${this.id} Code: ${this.countryCode} ${this.nationality} with ${this.population} million people`;
+  }
+}
+
+const kenyanUser = new National(50000000, "Kenyan", 254, 525);
+const rwandeseUser = new National(11000000, "Rwandese", 260, 123);
+
+console.log(kenyanUser.print());
+console.log(rwandeseUser.print());
