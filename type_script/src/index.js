@@ -34,3 +34,8 @@ console.log(person);
 var cid = 1;
 var customerId = cid;
 var customerTrue = true;
+// functions
+function addNum(x, y) {
+    return x + y;
+}
+console.log(addNum(5, 4));

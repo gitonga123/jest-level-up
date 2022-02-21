@@ -53,3 +53,10 @@ let cid: any = 1
 let customerId = <number>cid;
 let customerTrue = <boolean>true;
 
+// functions
+
+function addNum(x: number, y: number) {
+	return x+y;
+}
+
+console.log(addNum(5, 4));
