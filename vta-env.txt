@@ -1,0 +1,28 @@
+PGHOST=127.0.0.1
+PGPORT=5432
+PORT=3035
+PGDATABASE=vta_business_analysis
+PGUSER=postgres
+PGPASSWORD=password
+PGSCHEMA=public
+REDIS_URL=127.0.0.1
+REDIS_PORT=6379
+GITHUB=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
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=25
+SMTP_USER=6224427909461d
+SMTP_PASS=6ff0a93b6a84c9
+JWT_SECRET=ghpgt1tXOQhV7eh8n7u18iJdxi0dMbYCX1Cs3Fa
+BASE_URL="http://127.0.0.1:3035"
+API_URL="http://127.0.0.1:3035"
+FRONTEND_URL="http://127.0.0.1:3035/api"
+UPLOAD_PROFILE_PIC="./public/images/profiles"
+UPLOAD_VEHICLE_IMAGE="./public/images/vehicles"
+PROCESS_IMAGE_URL='http://161.35.99.253:3090/api/predict'
+VEHICLE_ENTRY_URL='/api/fieldUpload/test/upload'
+VEHICLE_EXIT_URL = '/api/fieldUpload/test/upload'
+KAJIADO_GIT=XzLvbvCs3hsRycjx96aC
+REFRESH_TOKEN_SECRET=rusomo7c4434f2e44747a593cefb3fa00ea309
+REFRESH_TOKEN_EXPIRATION=1y
+//download report - "/download?fields=id&fields=one,fields=two&limit=100&order=asc&file=pdf"
+rsync -avzh /home/otbdev/ncto_toolkit_application/cms ncttca@192.168.48.17:/mnt/source/cms
