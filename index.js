@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const db = require("./operations");
-const port = 3003;
+const port = 3033;
 const moment = require("moment-timezone");
 const timezone = "Africa/Nairobi";
 moment.locale("en");
@@ -12,43 +12,43 @@ const util = require("util");
 const { result } = require("lodash");
 const readFile = util.promisify(fs.readFile);
 
-app.get("/", async (req, res) => {
-  const _dates = await db.getRecordDate();
-  try {
-    if (_dates.event_date == false) {
-      res.status(404).send({
-        success: false,
-        value: {},
-        message: "Records not found",
-      });
-    }
-    const records = await db.getRecordsPerDate(_dates.event_date);
-    const insert_record = await mapEventToValue(
-      records["event"],
-      records["odd"]
-    );
-    await db.updateNumberRecords(
-      _dates.id,
-      _dates.number_of_records + insert_record,
-      4
-    );
-    console.log("Insert records --->", insert_record);
-    res.status(200).send({
-      success: true,
-      value: insert_record,
-      message: "Initial Insert",
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(400).send({
-      success: false,
-      value: {
-        error,
-      },
-      message: "Initial Insert error",
-    });
-  }
-});
+// app.get("/", async (req, res) => {
+//   const _dates = await db.getRecordDate();
+//   try {
+//     if (_dates.event_date == false) {
+//       res.status(404).send({
+//         success: false,
+//         value: {},
+//         message: "Records not found",
+//       });
+//     }
+//     const records = await db.getRecordsPerDate(_dates.event_date);
+//     const insert_record = await mapEventToValue(
+//       records["event"],
+//       records["odd"]
+//     );
+//     await db.updateNumberRecords(
+//       _dates.id,
+//       _dates.number_of_records + insert_record,
+//       4
+//     );
+//     console.log("Insert records --->", insert_record);
+//     res.status(200).send({
+//       success: true,
+//       value: insert_record,
+//       message: "Initial Insert",
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).send({
+//       success: false,
+//       value: {
+//         error,
+//       },
+//       message: "Initial Insert error",
+//     });
+//   }
+// });
 
 app.get("/update/second_half/details", async (req, res) => {
   const _dates = await db.getRecordDate(4);
@@ -244,12 +244,16 @@ var convertObjectToInsertQuery = function (object) {
     console.log(error);
   }
 };
+// /home/ncttca/OBR_TTCANC_2021.csv
+// COPY obr_burundi.north_corridor_data FROM '/home/ncttca/OBR_TTCANC_2021_2.csv' DELIMITER ',' CSV;
 
 app.get("/api/update/tt/results", async (req, res) => {
   let results_link = `/home/daniel/jest-level-up/upload/25_jan_2022.json`;
   const results_record = JSON.parse(await readFile(results_link));
-  const data = results_record["data"]["tournaments"][0]["events"];
 
+  //const data = results_record["data"]["tournaments"][0]["events"];
+  const temp_data = results_record['data']['tournaments'].map(item => item['events']);
+  const data = _.flatten(temp_data);
   const data_r = {};
   data.map((item) => {
     let scores = getScores(item["regularTimeScore"]);
@@ -263,10 +267,10 @@ app.get("/api/update/tt/results", async (req, res) => {
       both_total: scores[0] + scores[1],
       home_score: results[1],
       away_score: results[2],
-      scores: JSON.stringify(item["gameScore"])
+      scores: JSON.stringify(item["gameScore"]),
     };
   });
-
+  console.log(data.length);
   const matches = await db.getRecordsWithoutScores();
   let count_updates = 0;
   if (matches.rowCount > 0) {
@@ -283,7 +287,7 @@ app.get("/api/update/tt/results", async (req, res) => {
             "home_score",
             "away_score",
             "updated_score",
-            "scores"
+            "scores",
           ],
           [
             insert_v.correct_score,
@@ -308,7 +312,7 @@ app.get("/api/update/tt/results", async (req, res) => {
   <strong>Niiiice!</strong> Number of records ${count_updates}.
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>`;
-  res.status(200).send({ success: true, number_of_records: msg });
+  return res.status(200).send({ success: true, number_of_records: msg });
 });
 
 const getScores = function (item) {
