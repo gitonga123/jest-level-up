@@ -1,0 +1,18 @@
+version: '3.3'
+
+services:
+  db:
+    image: mysql:5.5.62
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'daniel123'
+    ports:
+      - "127.0.0.1:3306:3306"
+    expose:
+      - '3306'
+    network_mode: host
+    volumes:
+      - mysql_5.5:/var/lib/mysql
+
+volumes:
+  mysql_5.5:
