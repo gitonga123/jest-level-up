@@ -248,7 +248,7 @@ var convertObjectToInsertQuery = function (object) {
 // COPY obr_burundi.north_corridor_data FROM '/home/ncttca/OBR_TTCANC_2021_2.csv' DELIMITER ',' CSV;
 
 app.get("/api/update/tt/results", async (req, res) => {
-  let results_link = `/home/daniel/jest-level-up/upload/25_jan_2022.json`;
+  let results_link = `/var/www/html/jest-level-up/upload/25_jan_2022.json`;
   const results_record = JSON.parse(await readFile(results_link));
 
   //const data = results_record["data"]["tournaments"][0]["events"];
