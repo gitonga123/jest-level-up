@@ -21,7 +21,7 @@ UPLOAD_VEHICLE_IMAGE="./public/images/vehicles"
 PROCESS_IMAGE_URL='http://161.35.99.253:3090/api/predict'
 VEHICLE_ENTRY_URL='/api/fieldUpload/test/upload'
 VEHICLE_EXIT_URL = '/api/fieldUpload/test/upload'
-KAJIADO_GIT=XzLvbvCs3hsRycjx96aC
+KAJIADO=XzLvbvCs3hsRycjx96aC
 REFRESH_TOKEN_SECRET=rusomo7c4434f2e44747a593cefb3fa00ea309
 REFRESH_TOKEN_EXPIRATION=1y
 //download report - "/download?fields=id&fields=one,fields=two&limit=100&order=asc&file=pdf"
