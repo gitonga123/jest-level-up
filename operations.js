@@ -3,7 +3,6 @@ const fetch = require("node-fetch");
 
 const moment = require("moment-timezone");
 const _ = require("lodash");
-const { Pool } = require("pg");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -13,7 +12,15 @@ const date_format = "YYYY-MM-DD HH:mm:ss";
 
 const { Client } = require("pg");
 
-const client = new Client();
+const client = new Client(
+  {
+    user: process.env.PGUSER,
+    host: process.env.PGHOST,
+    database: process.env.PGDATABASE,
+    password: process.env.PGPASSWORD,
+    port: process.env.PGPORT
+  }
+);
 client.connect();
 
 const util = require("util");
@@ -77,9 +84,9 @@ const checkRecordExists = async (match_id) => {
   };
 };
 
-const getRecordsWithoutScores = async () => {
+const getRecordsWithoutScores = async (matches) => {
   const q_response = await client.query(
-    `SELECT id, match_id from public.sofascores where updated_score = 0;`
+    `SELECT id, match_id from public.sofascores where updated_score = 0 and match_id in ${matches} order by id desc;`
   );
 
   return q_response;
