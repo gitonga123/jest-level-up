@@ -270,8 +270,8 @@ app.get("/api/update/tt/results", async (req, res) => {
       scores: JSON.stringify(item["gameScore"]),
     };
   });
-  console.log(data.length);
-  const matches = await db.getRecordsWithoutScores();
+  let data_tuple = `('${Object.keys(data_r).join("','")}')`;
+  const matches = await db.getRecordsWithoutScores(data_tuple);
   let count_updates = 0;
   if (matches.rowCount > 0) {
     const update_r = matches.rows.map(async (item) => {
