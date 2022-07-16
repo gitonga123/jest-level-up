@@ -248,71 +248,79 @@ var convertObjectToInsertQuery = function (object) {
 // COPY obr_burundi.north_corridor_data FROM '/home/ncttca/OBR_TTCANC_2021_2.csv' DELIMITER ',' CSV;
 
 app.get("/api/update/tt/results", async (req, res) => {
-  let results_link = `/var/www/html/jest-level-up/upload/25_jan_2022.json`;
-  const results_record = JSON.parse(await readFile(results_link));
-
-  //const data = results_record["data"]["tournaments"][0]["events"];
-  const temp_data = results_record['data']['tournaments'].map(item => item['events']);
-  const data = _.flatten(temp_data);
-  const data_r = {};
-  data.map((item) => {
-    let scores = getScores(item["regularTimeScore"]);
-    let results = getWinner(item["setScore"]);
-    data_r[item["eventId"]] = {
-      event_date: item["estimateStartTime"],
-      correct_score: item["setScore"],
-      result: results[0],
-      home_total: scores[0],
-      away_total: scores[1],
-      both_total: scores[0] + scores[1],
-      home_score: results[1],
-      away_score: results[2],
-      scores: JSON.stringify(item["gameScore"]),
-    };
-  });
-  let data_tuple = `('${Object.keys(data_r).join("','")}')`;
-  const matches = await db.getRecordsWithoutScores(data_tuple);
+  let max_val = req.query.length;
   let count_updates = 0;
-  if (matches.rowCount > 0) {
-    const update_r = matches.rows.map(async (item) => {
-      let insert_v = data_r[item["match_id"]];
-      if (!_.isUndefined(insert_v)) {
-        await db.updateRecordsWithoutScores(
-          [
-            "correct_score",
-            "result",
-            "home_total",
-            "away_total",
-            "both_total",
-            "home_score",
-            "away_score",
-            "updated_score",
-            "scores",
-          ],
-          [
-            insert_v.correct_score,
-            insert_v.result,
-            insert_v.home_total,
-            insert_v.away_total,
-            insert_v.both_total,
-            insert_v.home_score,
-            insert_v.away_score,
-            "1",
-            insert_v.scores,
-            item["id"],
-          ]
-        );
-        count_updates = count_updates + 1;
-      }
+  for (let i = 1; i <= max_val; i++) {
+    let results_link = `/var/www/html/jest-level-up/upload/${i}_25_jan_2022.json`;
+    const results_record = JSON.parse(await readFile(results_link));
+
+    //const data = results_record["data"]["tournaments"][0]["events"];
+    const temp_data = results_record['data']['tournaments'].map(item => item['events']);
+    const data = _.flatten(temp_data);
+    const data_r = {};
+    data.map((item) => {
+      let scores = getScores(item["regularTimeScore"]);
+      let results = getWinner(item["setScore"]);
+      data_r[item["eventId"]] = {
+        event_date: item["estimateStartTime"],
+        correct_score: item["setScore"],
+        result: results[0],
+        home_total: scores[0],
+        away_total: scores[1],
+        both_total: scores[0] + scores[1],
+        home_score: results[1],
+        away_score: results[2],
+        scores: JSON.stringify(item["gameScore"]),
+      };
     });
-    await Promise.all(update_r);
+    let data_tuple = `('${Object.keys(data_r).join("','")}')`;
+    const matches = await db.getRecordsWithoutScores(data_tuple);
+    
+    if (matches.rowCount > 0) {
+      const update_r = matches.rows.map(async (item) => {
+        let insert_v = data_r[item["match_id"]];
+        if (!_.isUndefined(insert_v)) {
+          await db.updateRecordsWithoutScores(
+            [
+              "correct_score",
+              "result",
+              "home_total",
+              "away_total",
+              "both_total",
+              "home_score",
+              "away_score",
+              "updated_score",
+              "scores",
+            ],
+            [
+              insert_v.correct_score,
+              insert_v.result,
+              insert_v.home_total,
+              insert_v.away_total,
+              insert_v.both_total,
+              insert_v.home_score,
+              insert_v.away_score,
+              "1",
+              insert_v.scores,
+              item["id"],
+            ]
+          );
+          count_updates = count_updates + 1;
+        }
+      });
+      await Promise.all(update_r);
+    }
+
+
+    console.log("End file ---->", i);
   }
 
   let msg = `<div class="alert alert-info alert-dismissible fade show" role="alert">
   <strong>Niiiice!</strong> Number of records ${count_updates}.
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>`;
-  return res.status(200).send({ success: true, number_of_records: msg });
+  console.log(msg);
+  return res.status(200).send({ success: true, number_of_records: count_updates });
 });
 
 const getScores = function (item) {
